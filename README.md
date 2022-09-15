@@ -1,4 +1,82 @@
-# FastSpeech-Pytorch
+# [Moreh] Running on HAC VM - Moreh AI Framework
+
+## Prepare
+### Data
+Download and extract the [LJSpeech dataset](https://keithito.com/LJ-Speech-Dataset/).
+The dataset directory should be named `LJSpeech-1.1`.
+
+### Environment
+First, create conda environment:
+```bash
+conda create -n fastspeech python=3.8
+conda activate fastspeech
+```
+
+#### On HAC VM
+Install `torch` first:
+```bash
+conda install -y torchvision torchaudio numpy protobuf==3.13.0 pytorch==1.7.1 cpuonly -c pytorch
+```
+Then force update Moreh with latest version (`22.9.0` at the moment this document is written):
+```bash
+update-moreh --force --target 22.9.0
+```
+Comment out `torch` in `requirements.txt`, and then install the rest of the dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+#### On A100 VM
+Install the dependencies:
+```bash
+pip install -r requirements.txt
+```
+Then, override `torch` with the one with correct CUDA:
+```bash
+pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
+```
+
+### Code
+Clone the repo:
+```bash
+git clone https://github.com/xcmyz/FastSpeech
+cd FastSpeech
+```
+
+## Run
+
+### Prepare dataset
+First, copy the `LJSpeech-1.1` dataset folder to `./data` (symlink also works).
+Then, unzip `alignments.zip`:
+```bash
+unzip ./alignments.zip
+```
+Download the pretrained waveglow model in [this ggdrive link](https://drive.google.com/file/d/1WsibBTsuRg_SF2Z6L6NFRTT-NjEy1oTx/view?usp=sharing)
+and put it in `./waveglow/pretrained_model/`. Rename the pretrained model to `waveglow_256channels.pt`.
+Run the preprocess script:
+```bash
+python preprocess.py
+```
+
+### Train
+Edit `hparams.py` and adjust `epochs` & `log_step` to appropriate values.
+Then:
+```bash
+python train.py
+```
+
+### Evaluation
+After training is done, checkpoints will be saved in `./model_new` in format of
+`checkpoint_{number of steps}.pth.tar` (e.g. `checkpoint_3000.pth.tar`)
+
+To evaluation the checkpoint at 3000 steps:
+```
+python eval.py --step 3000
+```
+
+# Original README content:
+---
+# FastSpeech-Pytorch -
 The Implementation of FastSpeech Based on Pytorch.
 
 ## Update (2020/07/20)
