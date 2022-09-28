@@ -27,13 +27,18 @@ pip install -r requirements.txt
 ```
 
 #### On A100 VM
-Install the dependencies:
+Comment out `torch` in `requirements.txt`. Then, install the dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-Then, override `torch` with the one with correct CUDA:
+
+Then, install `torch` with correct CUDA:
 ```bash
+# torch 1.7.1
 pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
+
+# or torch 1.12.1
+conda install pytorch torchvision torchaudio cudatoolkit=1.13 -c pytorch
 ```
 
 ### Code
@@ -60,6 +65,7 @@ python preprocess.py
 
 ### Train
 Edit `hparams.py` and adjust `epochs` & `log_step` to appropriate values.
+Some recommendations are `epochs=20`, `log_step=20`.
 Then:
 ```bash
 python train.py
